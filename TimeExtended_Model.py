@@ -73,13 +73,25 @@ c_a_t_s = {(a, t, s): 0.1*t + 0.05*s for a in arcs for t in time_steps for s in 
 
 #-----------------------Example dataset---------------------#
 
-# Decision variables
-x_od = m.addVars(origins, destinations, vtype=GRB.BINARY, name="x_od")
+#---------------------Decision variables--------------------#
+
+#1 if origin o is assigned to destination d, 0 otherwise
+x_od = {}
+for o in origins:
+    for d in destinations:
+        var_name = f"x_{o}_{d}"
+        x_od[(o,d)] = m.addVar(vtype=GRB.BINARY, name=var_name)
+
+
+
+#1 if resource p is deployed to location n at time t in scenario s, 0 otherwise
 z_nts = m.addVars(nodes, time_steps, scenarios, vtype=GRB.BINARY, name="z_nts")
 w_ots = m.addVars(origins, time_steps, scenarios, vtype=GRB.BINARY, name="w_ots")
 y_ots = m.addVars(origins, time_steps, scenarios, vtype=GRB.BINARY, name="y_ots")
 r_ats = m.addVars(arcs, time_steps, scenarios, vtype=GRB.BINARY, name="r_ats")
 f_ao = m.addVars(arcs, origins, scenarios, vtype=GRB.CONTINUOUS, name="f_ao")
+
+#---------------------Decision variables--------------------#
 
 # Parameters - initialize c_ao correctly
 c_ao = {(a, o, s): 0.1 * s for a in arcs for o in origins for s in scenarios}
